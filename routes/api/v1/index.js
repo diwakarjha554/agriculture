@@ -6,6 +6,7 @@ import {
   createLandSizeUnit,
   createTransportArrangement,
   createVideoTutorial,
+  deleteAccount,
   deleteCropType,
   deleteHarvester,
   deleteLandSizeUnit,
@@ -20,6 +21,7 @@ import {
   getLandSizeUnitByLanguage,
   getTransportArrangementsByLanguage,
   getVideoTutorialByLanguageCode,
+  logout,
   restoreCropType,
   restoreHarvester,
   restoreLandSizeUnit,
@@ -86,5 +88,11 @@ API_ROUTER.get('/getHomeData', authenticateToken, getHomeData);
 
 // User Select Language Route
 API_ROUTER.post('/selectUserLanguage', authenticateToken, selectUserLanguage);
+
+// Logout Route
+API_ROUTER.get('/logout', authenticateToken, logout);
+
+// Delete Account Route
+API_ROUTER.post('/deleteAccount', authenticateToken, deleteAccount);
 
 export default API_ROUTER;

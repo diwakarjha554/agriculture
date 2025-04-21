@@ -9,7 +9,7 @@ export const createDbSchema = async () => {
         phone BIGINT UNIQUE,
         device_type ENUM('I', 'A', 'W') DEFAULT 'W',
         status ENUM('1', '0') DEFAULT '1',
-        language_code VARCHAR(10),
+        language_code VARCHAR(10) UNIQUE,
         language_name TEXT,
         is_admin ENUM('1', '0') DEFAULT '0',
         fcm_token TEXT,
@@ -59,7 +59,7 @@ export const createDbSchema = async () => {
       CREATE TABLE IF NOT EXISTS video_tutorials (
         id INT AUTO_INCREMENT PRIMARY KEY,
         video_url TEXT,
-        language_code VARCHAR(10),
+        language_code VARCHAR(10) UNIQUE,
         status ENUM('1', '0') DEFAULT '1',
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
@@ -141,14 +141,12 @@ export const createDbSchema = async () => {
         crop_details TEXT,
         crop_expected_yield DECIMAL(10,2),
         crop_expected_harvesting_date DATE,
-        harvester_used_id INT,
+        harvester_used VARCHAR(100),
         expected_rate DECIMAL(10,2),
-        transport_arrangement_id INT,
+        transport_arrangement VARCHAR(100),
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-        FOREIGN KEY (user_id) REFERENCES users(id),
-        FOREIGN KEY (harvester_used_id) REFERENCES harvesters(id),
-        FOREIGN KEY (transport_arrangement_id) REFERENCES transport_arrangements(id)
+        FOREIGN KEY (user_id) REFERENCES users(id)
       );
     `);
 
@@ -158,6 +156,20 @@ export const createDbSchema = async () => {
         id INT AUTO_INCREMENT PRIMARY KEY,
         title VARCHAR(255),
         content LONGTEXT,
+        language_code VARCHAR(10) UNIQUE,
+        status ENUM('1', '0') DEFAULT '1',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+      );
+    `);
+
+    // Terms Condition
+    await db.query(`
+      CREATE TABLE IF NOT EXISTS terms_condition (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        title VARCHAR(255),
+        content LONGTEXT,
+        language_code VARCHAR(10) UNIQUE,
         status ENUM('1', '0') DEFAULT '1',
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP

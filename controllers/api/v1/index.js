@@ -1467,3 +1467,103 @@ export const selectUserLanguage = async (req, res) => {
   }
 };
 
+/**
+ * Logout
+ * @param {Object} req - Request object
+ * @param {Object} res - Response object
+ */
+export const logout = async (req, res) => {
+  try {
+    const userId = req.tokenRecord.user_id;
+    if (!userId) {
+      return res.status(401).json({
+        error: true,
+        code: 401,
+        status: 0,
+        message: 'Unauthorized. Invalid token or session.',
+        payload: {},
+      });
+    }
+    // Delete user token to make him logout
+    await db.query(`DELETE FROM user_tokens WHERE user_id = ?`, [userId]);
+    return res.status(200).json({
+      error: false,
+      code: 200,
+      status: 1,
+      message: 'Logged out successfully',
+      payload: {},
+    });
+  } catch (error) {
+    return res.status(500).json({
+      error: true,
+      code: 500,
+      status: 0,
+      message: error.message,
+      payload: {},
+    });
+  }
+};
+
+/**
+ * Delete account
+ * @param {Object} req - Request object
+ * @param {Object} res - Response object
+ */
+export const deleteAccount = async (req, res) => {
+  try {
+    const { userId } = req.body;
+
+    if (!userId) {
+      return res.status(400).json({
+        error: true,
+        code: 400,
+        status: 0,
+        message: 'userId is required.',
+        payload: {},
+      });
+    }
+
+    // Check if user exists and is not already deleted
+    const [userRows] = await db.query(`SELECT status FROM users WHERE id = ?`, [userId]);
+
+    if (userRows.length === 0) {
+      return res.status(404).json({
+        error: true,
+        code: 404,
+        status: 0,
+        message: 'User not found.',
+        payload: {},
+      });
+    }
+
+    if (userRows[0].status === '0') {
+      return res.status(400).json({
+        error: true,
+        code: 400,
+        status: 0,
+        message: 'Account already deleted.',
+        payload: {},
+      });
+    }
+
+    // Update status to '0' (soft delete)
+    await db.query(`UPDATE users SET status = ? WHERE id = ?`, ['0', userId]);
+
+    return res.status(200).json({
+      error: false,
+      code: 200,
+      status: 1,
+      message: 'Account deleted successfully',
+      payload: {},
+    });
+  } catch (error) {
+    return res.status(500).json({
+      error: true,
+      code: 500,
+      status: 0,
+      message: error.message,
+      payload: {},
+    });
+  }
+};
+
